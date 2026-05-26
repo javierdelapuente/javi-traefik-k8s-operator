@@ -1,7 +1,7 @@
 version: 1
 rocks: []
 charms:
-- name: traefik-k8s
+- name: javi-traefik-k8s
   charmcraft-yaml: charmcraft.yaml
   resources:
     traefik-image:

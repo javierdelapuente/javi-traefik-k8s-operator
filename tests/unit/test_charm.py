@@ -368,7 +368,7 @@ class TestTraefikIngressCharm(unittest.TestCase):
             {
                 "proxied-endpoints": json.dumps(
                     {
-                        "traefik-k8s": {"url": "http://foo"},
+                        "javi-traefik-k8s": {"url": "http://foo"},
                     }
                 )
             }
@@ -404,7 +404,7 @@ class TestTraefikIngressCharm(unittest.TestCase):
             {
                 "proxied-endpoints": json.dumps(
                     {
-                        "traefik-k8s": {"url": "http://testhostname"},
+                        "javi-traefik-k8s": {"url": "http://testhostname"},
                         "remote": {"url": "http://testhostname/test-model-remote-0"},
                     }
                 )
@@ -436,7 +436,7 @@ class TestTraefikIngressCharm(unittest.TestCase):
             {
                 "proxied-endpoints": json.dumps(
                     {
-                        "traefik-k8s": {"url": "http://testhostname"},
+                        "javi-traefik-k8s": {"url": "http://testhostname"},
                         "remote/0": {"url": "http://testhostname/test-model-remote-0"},
                     }
                 )
