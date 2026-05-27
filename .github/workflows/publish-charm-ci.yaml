@@ -1,0 +1,17 @@
+name: Publish (charm-ci)
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  publish:
+    uses: canonical/charm-ci/.github/workflows/publish-artifacts.yml@main
+    secrets: inherit
+    with:
+      channel: latest/edge
