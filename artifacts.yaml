@@ -8,4 +8,6 @@ charms:
       type: oci-image
   platforms:
   - arch: amd64
+  - arch: arm64
+    runner: [ubuntu-24.04-arm]
 snaps: []
