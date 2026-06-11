@@ -7,6 +7,8 @@ backends:
     type: integration-test
     systems:
     - ubuntu-24.04
+    - ubuntu-24.04-arm64:
+        runner: [ubuntu-24.04-arm]
 environment:
   CONCIERGE: '$(HOST: echo "${CONCIERGE:-concierge-juju3.yaml}")'
   OPCLI_GIT_REF: '$(HOST: echo "${OPCLI_GIT_REF:-main}")'
