@@ -22,26 +22,26 @@ from tests.integration.legacy.helpers import dequote, get_k8s_service_address, r
 async def test_deployment(ops_test: OpsTest, traefik_charm, ipa_tester_charm):
     await asyncio.gather(
         ops_test.model.deploy(
-            traefik_charm, application_name="traefik-k8s", resources=trfk_resources, trust=True
+            traefik_charm, application_name="javi-traefik-k8s", resources=trfk_resources, trust=True
         ),
         ops_test.model.deploy(ipa_tester_charm, "ipa-tester"),
     )
 
     await ops_test.model.wait_for_idle(
-        ["traefik-k8s", "ipa-tester"], status="active", timeout=1000
+        ["javi-traefik-k8s", "ipa-tester"], status="active", timeout=1000
     )
 
 
 @pytest.mark.abort_on_fail
 async def test_relate(ops_test: OpsTest):
-    await ops_test.model.add_relation("ipa-tester:ingress", "traefik-k8s:ingress")
-    await ops_test.model.wait_for_idle(["traefik-k8s", "ipa-tester"])
+    await ops_test.model.add_relation("ipa-tester:ingress", "javi-traefik-k8s:ingress")
+    await ops_test.model.wait_for_idle(["javi-traefik-k8s", "ipa-tester"])
 
 
 def assert_ipa_charm_has_ingress(ops_test: OpsTest):
     data = get_relation_data(
         requirer_endpoint="ipa-tester/0:ingress",
-        provider_endpoint="traefik-k8s/0:ingress",
+        provider_endpoint="javi-traefik-k8s/0:ingress",
         model=ops_test.model_full_name,
     )
     provider_app_data = yaml.safe_load(data.provider.application_data["ingress"])
@@ -61,7 +61,7 @@ async def test_ipa_charm_has_ingress(ops_test: OpsTest):
 async def test_relation_data_shape(ops_test: OpsTest):
     data = get_relation_data(
         requirer_endpoint="ipa-tester/0:ingress",
-        provider_endpoint="traefik-k8s/0:ingress",
+        provider_endpoint="javi-traefik-k8s/0:ingress",
         model=ops_test.model_full_name,
     )
 
@@ -87,16 +87,16 @@ async def test_relation_data_shape(ops_test: OpsTest):
     # example:
     #  ingress:
     #    url: http://foo.bar/foo-ipa-tester/0
-    traefik_address = await get_k8s_service_address(ops_test, "traefik-k8s-lb")
+    traefik_address = await get_k8s_service_address(ops_test, "javi-traefik-k8s-lb")
     provider_app_data = json.loads(data.provider.application_data["ingress"])
     assert provider_app_data == {"url": f"http://{traefik_address}/{model}-ipa-tester"}
 
 
 @pytest.mark.abort_on_fail
 async def test_remove_relation(ops_test: OpsTest):
-    await ops_test.juju("remove-relation", "ipa-tester:ingress", "traefik-k8s:ingress")
-    await ops_test.model.wait_for_idle(["traefik-k8s", "ipa-tester"], status="active")
+    await ops_test.juju("remove-relation", "ipa-tester:ingress", "javi-traefik-k8s:ingress")
+    await ops_test.model.wait_for_idle(["javi-traefik-k8s", "ipa-tester"], status="active")
 
 
 async def test_cleanup(ops_test):
-    await remove_application(ops_test, "traefik-k8s", timeout=60)
+    await remove_application(ops_test, "javi-traefik-k8s", timeout=60)
