@@ -31,12 +31,12 @@ async def tcp_ipa_deployment(
         deploy_charm_if_not_deployed(ops_test, ipa_tester_charm, "ipa-tester"),
     )
     await asyncio.gather(
-        safe_relate(ops_test, "tcp-tester:ingress-per-unit", "traefik-k8s:ingress-per-unit"),
-        safe_relate(ops_test, "ipa-tester:ingress", "traefik-k8s:ingress"),
+        safe_relate(ops_test, "tcp-tester:ingress-per-unit", "javi-traefik-k8s:ingress-per-unit"),
+        safe_relate(ops_test, "ipa-tester:ingress", "javi-traefik-k8s:ingress"),
     )
 
     await ops_test.model.wait_for_idle(
-        ["traefik-k8s", "tcp-tester", "ipa-tester"], status="active", timeout=1000
+        ["javi-traefik-k8s", "tcp-tester", "ipa-tester"], status="active", timeout=1000
     )
 
 
@@ -46,4 +46,4 @@ async def test_tcp_ipa_compatibility(ops_test, tcp_ipa_deployment):
 
 
 async def test_cleanup(ops_test):
-    await remove_application(ops_test, "traefik-k8s", timeout=60)
+    await remove_application(ops_test, "javi-traefik-k8s", timeout=60)

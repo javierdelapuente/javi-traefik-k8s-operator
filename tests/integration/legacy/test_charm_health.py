@@ -41,7 +41,7 @@ async def test_deployment(ops_test: OpsTest, traefik_charm, health_tester_charm)
     await asyncio.gather(
         ops_test.model.deploy(
             traefik_charm,
-            application_name="traefik-k8s",
+            application_name="javi-traefik-k8s",
             resources=trfk_resources,
             trust=True,
         ),
@@ -54,18 +54,18 @@ async def test_deployment(ops_test: OpsTest, traefik_charm, health_tester_charm)
     )
 
     await ops_test.model.wait_for_idle(
-        ["traefik-k8s", "health-tester"], status="active", timeout=1000
+        ["javi-traefik-k8s", "health-tester"], status="active", timeout=1000
     )
 
 
 @pytest.mark.abort_on_fail
 async def test_relate(ops_test: OpsTest):
-    await ops_test.model.add_relation("health-tester:ingress", "traefik-k8s:ingress")
-    await ops_test.model.wait_for_idle(["traefik-k8s", "health-tester"])
+    await ops_test.model.add_relation("health-tester:ingress", "javi-traefik-k8s:ingress")
+    await ops_test.model.wait_for_idle(["javi-traefik-k8s", "health-tester"])
 
 
 async def test_health(ops_test: OpsTest):
-    traefik_address = await get_k8s_service_address(ops_test, "traefik-k8s-lb")
+    traefik_address = await get_k8s_service_address(ops_test, "javi-traefik-k8s-lb")
     health_address = f"http://{traefik_address}/{ops_test.model.name}-health-tester/health"
 
     third_application_unit = ops_test.model.applications["health-tester"].units[2]
@@ -73,7 +73,7 @@ async def test_health(ops_test: OpsTest):
         "set-health", **{"is-healthy": False}
     )
     await set_health_action.wait()
-    await ops_test.model.wait_for_idle(["traefik-k8s", "health-tester"])
+    await ops_test.model.wait_for_idle(["javi-traefik-k8s", "health-tester"])
     for _ in range(10):
         status, content = fetch_health_sync(health_address)
         assert status == 200, f"Expected 200 OK but got {status}"
@@ -88,7 +88,7 @@ async def test_health(ops_test: OpsTest):
         "set-health", **{"is-healthy": False}
     )
     await set_health_action.wait()
-    await ops_test.model.wait_for_idle(["traefik-k8s", "health-tester"])
+    await ops_test.model.wait_for_idle(["javi-traefik-k8s", "health-tester"])
 
     for _ in range(10):
         status, content = fetch_health_sync(health_address)
@@ -98,4 +98,4 @@ async def test_health(ops_test: OpsTest):
 
 
 async def test_cleanup(ops_test):
-    await remove_application(ops_test, "traefik-k8s", timeout=60)
+    await remove_application(ops_test, "javi-traefik-k8s", timeout=60)

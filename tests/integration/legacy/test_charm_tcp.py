@@ -26,23 +26,23 @@ async def test_deployment(ops_test: OpsTest, traefik_charm, tcp_tester_charm):
     await deploy_traefik_if_not_deployed(ops_test, traefik_charm)
     await ops_test.model.deploy(tcp_tester_charm, "tcp-tester", resources=tcp_charm_resources)
     await ops_test.model.wait_for_idle(
-        ["traefik-k8s", "tcp-tester"], status="active", timeout=1000
+        ["javi-traefik-k8s", "tcp-tester"], status="active", timeout=1000
     )
 
 
 @pytest.mark.abort_on_fail
 async def test_relate(ops_test: OpsTest):
     await ops_test.model.add_relation(
-        "tcp-tester:ingress-per-unit", "traefik-k8s:ingress-per-unit"
+        "tcp-tester:ingress-per-unit", "javi-traefik-k8s:ingress-per-unit"
     )
-    await ops_test.model.wait_for_idle(["traefik-k8s", "tcp-tester"])
+    await ops_test.model.wait_for_idle(["javi-traefik-k8s", "tcp-tester"])
 
 
 @pytest.mark.abort_on_fail
 async def test_relation_data_shape(ops_test: OpsTest):
     data = get_relation_data(
         requirer_endpoint="tcp-tester/0:ingress-per-unit",
-        provider_endpoint="traefik-k8s/0:ingress-per-unit",
+        provider_endpoint="javi-traefik-k8s/0:ingress-per-unit",
         model=ops_test.model_full_name,
     )
 
@@ -63,16 +63,16 @@ async def test_relation_data_shape(ops_test: OpsTest):
     #  ingress:
     #    url: http://foo.bar:80/foo-tcp-tester/0
     provider_app_data = yaml.safe_load(data.provider.application_data["ingress"])
-    traefik_ip = await get_k8s_service_address(ops_test, "traefik-k8s-lb")
+    traefik_ip = await get_k8s_service_address(ops_test, "javi-traefik-k8s-lb")
 
     assert provider_app_data == {"tcp-tester/0": {"url": f"{traefik_ip}:{port}"}}
 
 
 async def assert_tcp_charm_has_ingress(ops_test: OpsTest):
-    traefik_ip = await get_k8s_service_address(ops_test, "traefik-k8s-lb")
+    traefik_ip = await get_k8s_service_address(ops_test, "javi-traefik-k8s-lb")
     data = get_relation_data(
         requirer_endpoint="tcp-tester/0:ingress-per-unit",
-        provider_endpoint="traefik-k8s/0:ingress-per-unit",
+        provider_endpoint="javi-traefik-k8s/0:ingress-per-unit",
         model=ops_test.model_full_name,
     )
     port = data.requirer.unit_data["port"]
@@ -103,11 +103,11 @@ async def test_tcp_connection(ops_test: OpsTest):
 @pytest.mark.abort_on_fail
 async def test_remove_relation(ops_test: OpsTest):
     await ops_test.juju(
-        "remove-relation", "tcp-tester:ingress-per-unit", "traefik-k8s:ingress-per-unit"
+        "remove-relation", "tcp-tester:ingress-per-unit", "javi-traefik-k8s:ingress-per-unit"
     )
-    await ops_test.model.wait_for_idle(["traefik-k8s"], status="active")
+    await ops_test.model.wait_for_idle(["javi-traefik-k8s"], status="active")
     # the tcp-tester is allowed to bork out, we don't really care
 
 
 async def test_cleanup(ops_test):
-    await remove_application(ops_test, "traefik-k8s", timeout=60)
+    await remove_application(ops_test, "javi-traefik-k8s", timeout=60)

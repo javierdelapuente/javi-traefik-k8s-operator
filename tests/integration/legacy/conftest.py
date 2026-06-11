@@ -397,16 +397,16 @@ async def deploy_traefik_if_not_deployed(ops_test: OpsTest, traefik_charm):
     try:
         await ops_test.model.deploy(
             traefik_charm,
-            application_name="traefik-k8s",
+            application_name="javi-traefik-k8s",
             resources=trfk_resources,
             trust=True,
         )
     except JujuError as e:
-        if 'cannot add application "traefik-k8s": application already exists' not in str(e):
+        if 'cannot add application "javi-traefik-k8s": application already exists' not in str(e):
             raise e
 
     # now we're most definitely active.
-    await ops_test.model.wait_for_idle(["traefik-k8s"], timeout=1000)
+    await ops_test.model.wait_for_idle(["javi-traefik-k8s"], timeout=1000)
 
 
 async def deploy_charm_if_not_deployed(ops_test: OpsTest, charm, app_name: str, resources=None):

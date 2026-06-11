@@ -31,14 +31,14 @@ async def tcp_ipu_deployment(
         deploy_charm_if_not_deployed(ops_test, ipu_tester_charm, "ipu-tester"),
     )
     await asyncio.gather(
-        safe_relate(ops_test, "tcp-tester:ingress-per-unit", "traefik-k8s:ingress-per-unit"),
-        safe_relate(ops_test, "ipu-tester:ingress-per-unit", "traefik-k8s:ingress-per-unit"),
+        safe_relate(ops_test, "tcp-tester:ingress-per-unit", "javi-traefik-k8s:ingress-per-unit"),
+        safe_relate(ops_test, "ipu-tester:ingress-per-unit", "javi-traefik-k8s:ingress-per-unit"),
     )
 
     # Use "idle_period" to make sure traefik is functioning
     # Otherwise, occasionally getting "Connection refused"
     await ops_test.model.wait_for_idle(
-        ["traefik-k8s", "tcp-tester", "ipu-tester"],
+        ["javi-traefik-k8s", "tcp-tester", "ipu-tester"],
         status="active",
         timeout=3000,
         idle_period=30,
@@ -56,4 +56,4 @@ async def test_tcp_ipu_compatibility(ops_test, tcp_ipu_deployment):
 
 
 async def test_cleanup(ops_test):
-    await remove_application(ops_test, "traefik-k8s", timeout=60)
+    await remove_application(ops_test, "javi-traefik-k8s", timeout=60)

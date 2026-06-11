@@ -11,7 +11,7 @@ from tenacity import retry, stop_after_delay, wait_fixed
 
 from tests.integration.legacy.conftest import trfk_resources
 
-TRAEFIK = "traefik-k8s"
+TRAEFIK = "javi-traefik-k8s"
 UPSTREAM_INGRESS = f"{TRAEFIK}-upstream"
 IPA_TESTER = "ipa-tester"
 IPU_TESTER = "ipu-tester"
