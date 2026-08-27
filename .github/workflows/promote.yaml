@@ -36,7 +36,6 @@ jobs:
       base-name: ${{ matrix.base-name }}
       base-channel: ${{ matrix.base-channel }}
       base-architecture: ${{ matrix.base-architecture }}
-    secrets: inherit
     permissions:
       actions: read
       contents: write
