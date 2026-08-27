@@ -37,3 +37,8 @@ jobs:
       base-channel: ${{ matrix.base-channel }}
       base-architecture: ${{ matrix.base-architecture }}
     secrets: inherit
+    permissions:
+      actions: read
+      contents: write
+    secrets:
+      CHARMHUB_TOKEN: ${{ secrets.CHARMHUB_TOKEN }}
